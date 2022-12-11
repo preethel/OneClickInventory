@@ -55,7 +55,7 @@ namespace OneClickInventory.Controllers.Api
         public IActionResult Remove([FromBody]CrudViewModel<UnitOfMeasure> payload)
         {
             UnitOfMeasure unitOfMeasure = _context.UnitOfMeasure
-                .Where(x => x.UnitOfMeasureId == (int)payload.key)
+                .Where(x => x.UnitOfMeasureId == Convert.ToInt32(payload.key))
                 .FirstOrDefault();
             _context.UnitOfMeasure.Remove(unitOfMeasure);
             _context.SaveChanges();

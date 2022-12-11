@@ -10,6 +10,8 @@ using OneClickInventory.Models;
 using OneClickInventory.Services;
 using OneClickInventory.Models.SyncfusionViewModels;
 using Microsoft.AspNetCore.Authorization;
+using static OneClickInventory.Pages.MainMenu;
+using System.Security.Claims;
 
 namespace OneClickInventory.Controllers.Api
 {
@@ -32,15 +34,22 @@ namespace OneClickInventory.Controllers.Api
         [HttpGet]
         public async Task<IActionResult> GetPaymentReceive()
         {
-            List<PaymentReceive> Items = await _context.PaymentReceive.ToListAsync();
+            List<Models.PaymentReceive> Items = await _context.PaymentReceive.Where(x => x.DomainStatus == true).ToListAsync();
             int Count = Items.Count();
             return Ok(new { Items, Count });
         }
 
         [HttpPost("[action]")]
-        public IActionResult Insert([FromBody]CrudViewModel<PaymentReceive> payload)
+        public IActionResult Insert([FromBody]CrudViewModel<Models.PaymentReceive> payload)
         {
-            PaymentReceive paymentReceive = payload.value;
+            Models.PaymentReceive paymentReceive = payload.value;
+            paymentReceive.DomainStatus = true;
+            /*----User email----*/
+            var applicationUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            UserProfile userProfile = _context.UserProfile.Where(x => x.ApplicationUserId == applicationUserId).FirstOrDefault();
+            paymentReceive.ModifiedBy = userProfile.Email;
+            paymentReceive.ModifiedAt = DateTime.Now.ToString();
+
             paymentReceive.PaymentReceiveName = _numberSequence.GetNumberSequence("PAYRCV");
             _context.PaymentReceive.Add(paymentReceive);
             _context.SaveChanges();
@@ -48,23 +57,54 @@ namespace OneClickInventory.Controllers.Api
         }
 
         [HttpPost("[action]")]
-        public IActionResult Update([FromBody]CrudViewModel<PaymentReceive> payload)
+        public IActionResult Update([FromBody]CrudViewModel<Models.PaymentReceive> payload)
         {
-            PaymentReceive paymentReceive = payload.value;
+            Models.PaymentReceive paymentReceive = payload.value;
+            paymentReceive.DomainStatus = true;
+            /*----User email----*/
+            var applicationUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            UserProfile userProfile = _context.UserProfile.Where(x => x.ApplicationUserId == applicationUserId).FirstOrDefault();
+            paymentReceive.ModifiedBy = userProfile.Email;
+            paymentReceive.ModifiedAt = DateTime.Now.ToString();
+
             _context.PaymentReceive.Update(paymentReceive);
             _context.SaveChanges();
             return Ok(paymentReceive);
         }
 
         [HttpPost("[action]")]
-        public IActionResult Remove([FromBody]CrudViewModel<PaymentReceive> payload)
+        public async Task<IActionResult> Remove([FromBody]CrudViewModel<Models.PaymentReceive> payload)
         {
-            PaymentReceive paymentReceive = _context.PaymentReceive
-                .Where(x => x.PaymentReceiveId == (int)payload.key)
-                .FirstOrDefault();
-            _context.PaymentReceive.Remove(paymentReceive);
-            _context.SaveChanges();
-            return Ok(paymentReceive);
+            //Models.PaymentReceive paymentReceive = _context.PaymentReceive
+            //    .Where(x => x.PaymentReceiveId == Convert.ToInt32(payload.key))
+            //    .FirstOrDefault();
+            //_context.PaymentReceive.Remove(paymentReceive);
+            //_context.SaveChanges();
+            //return Ok(paymentReceive);
+            var paymentReceive = await _context.PaymentReceive.FindAsync(Convert.ToInt32(payload.key));
+
+            if (paymentReceive == null)
+            {
+                return NotFound();
+            }
+
+            try
+            {
+                /*----User email----*/
+                var applicationUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                UserProfile userProfile = _context.UserProfile.Where(x => x.ApplicationUserId == applicationUserId).FirstOrDefault();
+                paymentReceive.ModifiedBy = userProfile.Email;
+                paymentReceive.ModifiedAt = DateTime.Now.ToString();
+                paymentReceive.DomainStatus = false;
+                _context.PaymentReceive.Update(paymentReceive);
+                await _context.SaveChangesAsync();
+                return Ok(paymentReceive);
+            }
+            catch (DbUpdateException ex)
+            {
+                //Log the error (uncomment ex variable name and write a log.)
+                return NotFound(ex.Message);
+            }
 
         }
     }

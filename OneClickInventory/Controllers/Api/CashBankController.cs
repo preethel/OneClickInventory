@@ -7,6 +7,7 @@ using OneClickInventory.Data;
 using OneClickInventory.Models;
 using OneClickInventory.Models.SyncfusionViewModels;
 using Microsoft.AspNetCore.Authorization;
+using System;
 
 namespace OneClickInventory.Controllers.Api
 {
@@ -53,7 +54,7 @@ namespace OneClickInventory.Controllers.Api
         public IActionResult Remove([FromBody]CrudViewModel<CashBank> payload)
         {
             CashBank cashBank = _context.CashBank
-                .Where(x => x.CashBankId == (int)payload.key)
+                .Where(x => x.CashBankId == Convert.ToInt32(payload.key))
                 .FirstOrDefault();
             _context.CashBank.Remove(cashBank);
             _context.SaveChanges();

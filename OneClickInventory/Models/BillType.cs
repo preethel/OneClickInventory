@@ -2,7 +2,7 @@
 
 namespace OneClickInventory.Models
 {
-    public class BillType
+    public class BillType : Status
     {
         public int BillTypeId { get; set; }
         [Required]

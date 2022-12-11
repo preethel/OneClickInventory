@@ -57,7 +57,7 @@ namespace OneClickInventory.Controllers.Api
         public IActionResult Remove([FromBody]CrudViewModel<Warehouse> payload)
         {
             Warehouse warehouse = _context.Warehouse
-                .Where(x => x.WarehouseId == (int)payload.key)
+                .Where(x => x.WarehouseId == Convert.ToInt32(payload.key))
                 .FirstOrDefault();
             _context.Warehouse.Remove(warehouse);
             _context.SaveChanges();

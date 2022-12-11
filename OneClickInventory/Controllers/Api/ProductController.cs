@@ -9,6 +9,8 @@ using OneClickInventory.Data;
 using OneClickInventory.Models;
 using OneClickInventory.Models.SyncfusionViewModels;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using static OneClickInventory.Pages.MainMenu;
 
 namespace OneClickInventory.Controllers.Api
 {
@@ -28,7 +30,7 @@ namespace OneClickInventory.Controllers.Api
         [HttpGet]
         public async Task<IActionResult> GetProduct()
         {
-            List<Product> Items = await _context.Product.ToListAsync();
+            List<Models.Product> Items = await _context.Product.Where(x => x.DomainStatus == true).ToListAsync();
             int Count = Items.Count();
             return Ok(new { Items, Count });
         }
@@ -36,32 +38,70 @@ namespace OneClickInventory.Controllers.Api
 
 
         [HttpPost("[action]")]
-        public IActionResult Insert([FromBody]CrudViewModel<Product> payload)
+        public IActionResult Insert([FromBody]CrudViewModel<Models.Product> payload)
         {
-            Product product = payload.value;
+            Models.Product product = payload.value;
+            product.DomainStatus = true;
+            /*----User email----*/
+            var applicationUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            UserProfile userProfile = _context.UserProfile.Where(x => x.ApplicationUserId == applicationUserId).FirstOrDefault();
+            product.ModifiedBy = userProfile.Email;
+            product.ModifiedAt = DateTime.Now.ToString();
             _context.Product.Add(product);
             _context.SaveChanges();
             return Ok(product);
         }
 
         [HttpPost("[action]")]
-        public IActionResult Update([FromBody]CrudViewModel<Product> payload)
+        public IActionResult Update([FromBody]CrudViewModel<Models.Product> payload)
         {
-            Product product = payload.value;
+            Models.Product product = payload.value;
+
+            product.DomainStatus = true;
+            /*----User email----*/
+            var applicationUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            UserProfile userProfile = _context.UserProfile.Where(x => x.ApplicationUserId == applicationUserId).FirstOrDefault();
+            product.ModifiedBy = userProfile.Email;
+            product.ModifiedAt = DateTime.Now.ToString();
             _context.Product.Update(product);
             _context.SaveChanges();
             return Ok(product);
         }
 
         [HttpPost("[action]")]
-        public IActionResult Remove([FromBody]CrudViewModel<Product> payload)
+        public async Task<IActionResult> Remove([FromBody]CrudViewModel<Models.Product> payload)
         {
-            Product product = _context.Product
-                .Where(x => x.ProductId == (int)payload.key)
-                .FirstOrDefault();
-            _context.Product.Remove(product);
-            _context.SaveChanges();
-            return Ok(product);
+            //Product product = _context.Product
+            //    .Where(x => x.ProductId == Convert.ToInt32(payload.key))
+            //    .FirstOrDefault();
+            //_context.Product.Remove(product);
+            //_context.SaveChanges();
+            //return Ok(product);
+
+            var product = await _context.Product.FindAsync(Convert.ToInt32(payload.key));
+
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            try
+            {
+                /*----User email----*/
+                var applicationUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                UserProfile userProfile = _context.UserProfile.Where(x => x.ApplicationUserId == applicationUserId).FirstOrDefault();
+                product.ModifiedBy = userProfile.Email;
+                product.ModifiedAt = DateTime.Now.ToString();
+                product.DomainStatus = false;
+                _context.Product.Update(product);
+                await _context.SaveChangesAsync();
+                return Ok(product);
+            }
+            catch (DbUpdateException ex)
+            {
+                //Log the error (uncomment ex variable name and write a log.)
+                return NotFound(ex.Message);
+            }
 
         }
     }

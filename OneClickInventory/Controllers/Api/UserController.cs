@@ -107,7 +107,7 @@ namespace OneClickInventory.Controllers.Api
         [HttpPost("[action]")]
         public async Task<IActionResult> Remove([FromBody]CrudViewModel<UserProfile> payload)
         {
-            var userProfile = _context.UserProfile.SingleOrDefault(x => x.UserProfileId.Equals((int)payload.key));
+            var userProfile = _context.UserProfile.SingleOrDefault(x => x.UserProfileId.Equals(Convert.ToInt32(payload.key)));
             if (userProfile != null)
             {
                 var user = _context.Users.Where(x => x.Id.Equals(userProfile.ApplicationUserId)).FirstOrDefault();

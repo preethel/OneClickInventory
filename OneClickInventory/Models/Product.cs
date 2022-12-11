@@ -2,7 +2,7 @@
 
 namespace OneClickInventory.Models
 {
-    public class Product
+    public class Product : Status
     {
         public int ProductId { get; set; }
         [Required]

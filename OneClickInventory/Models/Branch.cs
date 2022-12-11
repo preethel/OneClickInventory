@@ -2,7 +2,7 @@
 
 namespace OneClickInventory.Models
 {
-    public class Branch
+    public class Branch : Status
     {
         public int BranchId { get; set; }
         [Required]

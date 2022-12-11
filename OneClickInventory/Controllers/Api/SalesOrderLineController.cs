@@ -159,7 +159,7 @@ namespace OneClickInventory.Controllers.Api
         public IActionResult Remove([FromBody]CrudViewModel<SalesOrderLine> payload)
         {
             SalesOrderLine salesOrderLine = _context.SalesOrderLine
-                .Where(x => x.SalesOrderLineId == (int)payload.key)
+                .Where(x => x.SalesOrderLineId == Convert.ToInt32(payload.key))
                 .FirstOrDefault();
             _context.SalesOrderLine.Remove(salesOrderLine);
             _context.SaveChanges();

@@ -57,7 +57,7 @@ namespace OneClickInventory.Controllers.Api
         public IActionResult Remove([FromBody]CrudViewModel<CustomerType> payload)
         {
             CustomerType customerType = _context.CustomerType
-                .Where(x => x.CustomerTypeId == (int)payload.key)
+                .Where(x => x.CustomerTypeId == Convert.ToInt32(payload.key))
                 .FirstOrDefault();
             _context.CustomerType.Remove(customerType);
             _context.SaveChanges();

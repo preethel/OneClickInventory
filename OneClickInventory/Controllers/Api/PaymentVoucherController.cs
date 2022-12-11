@@ -10,6 +10,8 @@ using OneClickInventory.Models;
 using OneClickInventory.Services;
 using OneClickInventory.Models.SyncfusionViewModels;
 using Microsoft.AspNetCore.Authorization;
+using static OneClickInventory.Pages.MainMenu;
+using System.Security.Claims;
 
 namespace OneClickInventory.Controllers.Api
 {
@@ -32,7 +34,7 @@ namespace OneClickInventory.Controllers.Api
         [HttpGet]
         public async Task<IActionResult> GetPaymentVoucher()
         {
-            List<PaymentVoucher> Items = await _context.PaymentVoucher.ToListAsync();
+            List<Models.PaymentVoucher> Items = await _context.PaymentVoucher.Where(x => x.DomainStatus == true).ToListAsync();
             int Count = Items.Count();
             return Ok(new { Items, Count });
         }
@@ -40,33 +42,71 @@ namespace OneClickInventory.Controllers.Api
 
 
         [HttpPost("[action]")]
-        public IActionResult Insert([FromBody]CrudViewModel<PaymentVoucher> payload)
+        public IActionResult Insert([FromBody]CrudViewModel<Models.PaymentVoucher> payload)
         {
-            PaymentVoucher paymentVoucher = payload.value;
+            Models.PaymentVoucher paymentVoucher = payload.value;
             paymentVoucher.PaymentVoucherName = _numberSequence.GetNumberSequence("PAYVCH");
+            paymentVoucher.DomainStatus = true;
+            /*----User email----*/
+            var applicationUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            UserProfile userProfile = _context.UserProfile.Where(x => x.ApplicationUserId == applicationUserId).FirstOrDefault();
+            paymentVoucher.ModifiedBy = userProfile.Email;
+            paymentVoucher.ModifiedAt = DateTime.Now.ToString();
+
             _context.PaymentVoucher.Add(paymentVoucher);
             _context.SaveChanges();
             return Ok(paymentVoucher);
         }
 
         [HttpPost("[action]")]
-        public IActionResult Update([FromBody]CrudViewModel<PaymentVoucher> payload)
+        public IActionResult Update([FromBody]CrudViewModel<Models.PaymentVoucher> payload)
         {
-            PaymentVoucher paymentVoucher = payload.value;
+            Models.PaymentVoucher paymentVoucher = payload.value;
+
+            paymentVoucher.DomainStatus = true;
+            /*----User email----*/
+            var applicationUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            UserProfile userProfile = _context.UserProfile.Where(x => x.ApplicationUserId == applicationUserId).FirstOrDefault();
+            paymentVoucher.ModifiedBy = userProfile.Email;
+            paymentVoucher.ModifiedAt = DateTime.Now.ToString();
             _context.PaymentVoucher.Update(paymentVoucher);
             _context.SaveChanges();
             return Ok(paymentVoucher);
         }
 
         [HttpPost("[action]")]
-        public IActionResult Remove([FromBody]CrudViewModel<PaymentVoucher> payload)
+        public async Task<IActionResult> Remove([FromBody]CrudViewModel<Models.PaymentVoucher> payload)
         {
-            PaymentVoucher paymentVoucher = _context.PaymentVoucher
-                .Where(x => x.PaymentvoucherId == (int)payload.key)
-                .FirstOrDefault();
-            _context.PaymentVoucher.Remove(paymentVoucher);
-            _context.SaveChanges();
-            return Ok(paymentVoucher);
+            //Models.PaymentVoucher paymentVoucher = _context.PaymentVoucher
+            //    .Where(x => x.PaymentvoucherId == Convert.ToInt32(payload.key))
+            //    .FirstOrDefault();
+            //_context.PaymentVoucher.Remove(paymentVoucher);
+            //_context.SaveChanges();
+            //return Ok(paymentVoucher);
+            var paymentVoucher = await _context.PaymentVoucher.FindAsync(Convert.ToInt32(payload.key));
+
+            if (paymentVoucher == null)
+            {
+                return NotFound();
+            }
+
+            try
+            {
+                /*----User email----*/
+                var applicationUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                UserProfile userProfile = _context.UserProfile.Where(x => x.ApplicationUserId == applicationUserId).FirstOrDefault();
+                paymentVoucher.ModifiedBy = userProfile.Email;
+                paymentVoucher.ModifiedAt = DateTime.Now.ToString();
+                paymentVoucher.DomainStatus = false;
+                _context.PaymentVoucher.Update(paymentVoucher);
+                await _context.SaveChangesAsync();
+                return Ok(paymentVoucher);
+            }
+            catch (DbUpdateException ex)
+            {
+                //Log the error (uncomment ex variable name and write a log.)
+                return NotFound(ex.Message);
+            }
 
         }
     }

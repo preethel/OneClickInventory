@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace OneClickInventory.Models
 {
-    public class Invoice
+    public class Invoice : Status
     {
         public int InvoiceId { get; set; }
         [Display(Name = "Invoice Number")]

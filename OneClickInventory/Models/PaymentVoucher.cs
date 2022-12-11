@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace OneClickInventory.Models
 {
-    public class PaymentVoucher
+    public class PaymentVoucher : Status
     {
         public int PaymentvoucherId { get; set; }
         [Display(Name = "Payment Voucher Number")]

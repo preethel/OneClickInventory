@@ -56,7 +56,7 @@ namespace OneClickInventory.Controllers.Api
         public IActionResult Remove([FromBody]CrudViewModel<InvoiceType> payload)
         {
             InvoiceType invoiceType = _context.InvoiceType
-                .Where(x => x.InvoiceTypeId == (int)payload.key)
+                .Where(x => x.InvoiceTypeId == Convert.ToInt32(payload.key))
                 .FirstOrDefault();
             _context.InvoiceType.Remove(invoiceType);
             _context.SaveChanges();

@@ -134,7 +134,7 @@ namespace OneClickInventory.Controllers.Api
         public IActionResult Remove([FromBody]CrudViewModel<SalesOrder> payload)
         {
             SalesOrder salesOrder = _context.SalesOrder
-                .Where(x => x.SalesOrderId == (int)payload.key)
+                .Where(x => x.SalesOrderId == Convert.ToInt32(payload.key))
                 .FirstOrDefault();
             _context.SalesOrder.Remove(salesOrder);
             _context.SaveChanges();

@@ -7,6 +7,8 @@ using OneClickInventory.Data;
 using OneClickInventory.Models;
 using OneClickInventory.Models.SyncfusionViewModels;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using System;
 
 namespace OneClickInventory.Controllers.Api
 {
@@ -35,6 +37,12 @@ namespace OneClickInventory.Controllers.Api
         public IActionResult Insert([FromBody]CrudViewModel<Branch> payload)
         {
             Branch branch = payload.value;
+            /*----User email----*/
+            var applicationUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            UserProfile userProfile = _context.UserProfile.Where(x => x.ApplicationUserId == applicationUserId).FirstOrDefault();
+            branch.ModifiedBy = userProfile.Email;
+            branch.ModifiedAt = DateTime.Now.ToString();
+
             _context.Branch.Add(branch);
             _context.SaveChanges();
             return Ok(branch);
@@ -44,6 +52,12 @@ namespace OneClickInventory.Controllers.Api
         public IActionResult Update([FromBody]CrudViewModel<Branch> payload)
         {
             Branch branch = payload.value;
+            /*----User email----*/
+            var applicationUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            UserProfile userProfile = _context.UserProfile.Where(x => x.ApplicationUserId == applicationUserId).FirstOrDefault();
+            branch.ModifiedBy = userProfile.Email;
+            branch.ModifiedAt = DateTime.Now.ToString();
+
             _context.Branch.Update(branch);
             _context.SaveChanges();
             return Ok(branch);
@@ -53,7 +67,7 @@ namespace OneClickInventory.Controllers.Api
         public IActionResult Remove([FromBody]CrudViewModel<Branch> payload)
         {
             Branch branch = _context.Branch
-                .Where(x => x.BranchId == (int)payload.key)
+                .Where(x => x.BranchId == Convert.ToInt32(payload.key))
                 .FirstOrDefault();
             _context.Branch.Remove(branch);
             _context.SaveChanges();
