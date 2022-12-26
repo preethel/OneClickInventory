@@ -11,6 +11,7 @@ namespace OneClickInventory.Models
         public string Barcode { get; set; }
         public string Description { get; set; }
         public string ProductImageUrl { get; set; }
+        public int ProductQuantity { get; set; }
         [Display(Name = "UOM")]
         public int UnitOfMeasureId { get; set; }
         public double DefaultBuyingPrice { get; set; } = 0.0;

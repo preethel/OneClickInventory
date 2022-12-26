@@ -9,6 +9,7 @@ using OneClickInventory.Data;
 using OneClickInventory.Models;
 using OneClickInventory.Models.SyncfusionViewModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization.Policy;
 
 namespace OneClickInventory.Controllers.Api
 {
@@ -138,6 +139,13 @@ namespace OneClickInventory.Controllers.Api
         {
             SalesOrderLine salesOrderLine = payload.value;
             salesOrderLine = this.Recalculate(salesOrderLine);
+            /*----Product Decrement---*/
+            var proId = salesOrderLine.ProductId;
+            var product = _context.Product.Where(x => x.ProductId == proId).FirstOrDefault();
+            product.ProductQuantity = ((int)(product.ProductQuantity - salesOrderLine.Quantity));
+            _context.Product.Update(product);
+            _context.SaveChanges();
+
             _context.SalesOrderLine.Add(salesOrderLine);
             _context.SaveChanges();
             this.UpdateSalesOrder(salesOrderLine.SalesOrderId);
@@ -161,6 +169,13 @@ namespace OneClickInventory.Controllers.Api
             SalesOrderLine salesOrderLine = _context.SalesOrderLine
                 .Where(x => x.SalesOrderLineId == Convert.ToInt32(payload.key))
                 .FirstOrDefault();
+            /*----Product Decrement---*/
+            var proId = salesOrderLine.ProductId;
+            var product = _context.Product.Where(x => x.ProductId == proId).FirstOrDefault();
+            product.ProductQuantity = ((int)(product.ProductQuantity + salesOrderLine.Quantity));
+            _context.Product.Update(product);
+            _context.SaveChanges();
+
             _context.SalesOrderLine.Remove(salesOrderLine);
             _context.SaveChanges();
             this.UpdateSalesOrder(salesOrderLine.SalesOrderId);
