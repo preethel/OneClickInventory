@@ -22,16 +22,28 @@ namespace OneClickInventory.Controllers
         public async Task<IActionResult> Index()
         {
             List<ProductType> ProductTypes = await _context.ProductType.ToListAsync();
-            int ProductTypeCount = ProductTypes.Count();
-            ViewBag.ProductTypeCount = ProductTypeCount.ToString("C0");
+            int ProductTypeCount = 0;
+            foreach (var productType in ProductTypes)
+            {
+                ProductTypeCount++;
+            }
+            ViewBag.ProductTypeCount = ProductTypeCount.ToString();
 
             List<Product> Products = await _context.Product.Where(x => x.DomainStatus == true).ToListAsync();
-            int ProductCount = Products.Count();
-            ViewBag.ProductCount = ProductCount.ToString("C0");
+            int ProductCount = 0;
+            foreach(var count in Products)
+            {
+                ProductCount++;
+            }
+            ViewBag.ProductCount = ProductCount.ToString();
 
             List<SalesOrder> SalesOrders = await _context.SalesOrder.ToListAsync();
-            int SalesOrderCount = SalesOrders.Count();
-            ViewBag.ProductCount = ProductCount.ToString("C0");
+            int SalesOrderCount = 0;
+            foreach(var sales in SalesOrders) 
+            {
+                SalesOrderCount++;
+            }
+            ViewBag.SalesOrderCount = SalesOrderCount.ToString();
 
 
 
