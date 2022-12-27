@@ -129,7 +129,7 @@ namespace OneClickInventory
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=UserRole}/{action=UserProfile}/{id?}");
+                    pattern: "{controller=Dashboard}/{action=Index}");
             });
             
         }
