@@ -47,6 +47,8 @@ There are many things that will be done with our project. The following are the 
 
 
 ## Screanshot
+![App Screenshot](https://github.com/preethel/OneClickInventory/blob/main/SS-OCInventory/ss.png)
+
 ![App Screenshot](https://github.com/preethel/OneClickInventory/blob/main/SS-OCInventory/ss2.png)
 
 ![App Screenshot](https://github.com/preethel/OneClickInventory/blob/main/SS-OCInventory/ss3.png)
@@ -55,4 +57,3 @@ There are many things that will be done with our project. The following are the 
 
 ![App Screenshot](https://github.com/preethel/OneClickInventory/blob/main/SS-OCInventory/ss6.png)
 
-![App Screenshot](https://github.com/preethel/OneClickInventory/blob/main/SS-OCInventory/ss7.png)
