@@ -43,16 +43,16 @@ There are many things that will be done with our project. The following are the 
 
 
 ## Dashboard
-![App Screenshot](C:\Users\azam1\Desktop\OneClickInventory\SS-OCInventory\ss.png)
+![App Screenshot](https://github.com/preethel/OneClickInventory/blob/main/SS-OCInventory/ss1.png)
 
 
 ## Screanshot
-![App Screenshot](https://github.com/preethel/preethel/blob/main/ss.png)
+![App Screenshot](https://github.com/preethel/OneClickInventory/blob/main/SS-OCInventory/ss2.png)
 
-![App Screenshot](https://github.com/preethel/preethel/blob/main/ss.png)
+![App Screenshot](https://github.com/preethel/OneClickInventory/blob/main/SS-OCInventory/ss3.png)
 
-![App Screenshot](https://github.com/preethel/preethel/blob/main/ss.png)
+![App Screenshot](https://github.com/preethel/OneClickInventory/blob/main/SS-OCInventory/ss4.png)
 
-![App Screenshot](https://github.com/preethel/preethel/blob/main/ss.png)
+![App Screenshot](https://github.com/preethel/OneClickInventory/blob/main/SS-OCInventory/ss6.png)
 
-![App Screenshot](https://github.com/preethel/preethel/blob/main/ss.png)
+![App Screenshot](https://github.com/preethel/OneClickInventory/blob/main/SS-OCInventory/ss7.png)
